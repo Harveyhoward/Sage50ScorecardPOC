@@ -1,0 +1,466 @@
+<style>
+  #spsc-wrap * { box-sizing: border-box; margin: 0; padding: 0; }
+  #spsc-wrap {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f7fa;
+    padding: 20px;
+    color: #1a1a2e;
+    min-width: 600px;
+  }
+
+  /* ── HEADER ── */
+  #spsc-wrap .sp-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+  }
+  #spsc-wrap .sp-header-left { display: flex; align-items: center; gap: 10px; }
+  #spsc-wrap .sp-logo {
+    width: 32px; height: 32px; background: #00A650;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  #spsc-wrap .sp-logo svg { width: 18px; height: 18px; fill: white; }
+  #spsc-wrap .sp-title { font-size: 17px; font-weight: 700; color: #0e1117; letter-spacing: -0.01em; }
+  #spsc-wrap .sp-subtitle { font-size: 11px; color: #888; margin-top: 2px; }
+  #spsc-wrap .sp-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  #spsc-wrap select {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 12px; padding: 6px 10px;
+    border-radius: 5px; border: 1px solid #ccc;
+    background: white; color: #333; cursor: pointer;
+  }
+  #spsc-wrap .sp-updated { font-size: 11px; color: #aaa; }
+
+  /* ── SUMMARY STRIP ── */
+  #spsc-wrap .sp-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px; margin-bottom: 16px;
+  }
+  #spsc-wrap .sp-sum-card {
+    background: white; border: 1px solid #e2e6ee;
+    border-radius: 8px; padding: 12px 14px;
+  }
+  #spsc-wrap .sp-sum-card.hl { border-left: 3px solid #00A650; }
+  #spsc-wrap .sp-sum-label { font-size: 10px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 5px; }
+  #spsc-wrap .sp-sum-val { font-size: 22px; font-weight: 700; color: #0e1117; letter-spacing: -0.02em; line-height: 1; }
+  #spsc-wrap .sp-sum-val.green { color: #00A650; }
+  #spsc-wrap .sp-sum-sub { font-size: 10px; color: #aaa; margin-top: 4px; }
+
+  /* ── COMPLETION ── */
+  #spsc-wrap .sp-comp {
+    background: white; border: 1px solid #e2e6ee; border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  #spsc-wrap .sp-comp-label { font-size: 11px; font-weight: 600; color: #666; white-space: nowrap; }
+  #spsc-wrap .sp-comp-track { flex: 1; min-width: 100px; height: 7px; background: #eee; border-radius: 99px; overflow: hidden; }
+  #spsc-wrap .sp-comp-fill { height: 100%; background: #00A650; border-radius: 99px; }
+  #spsc-wrap .sp-comp-pct { font-size: 13px; font-weight: 700; color: #00A650; white-space: nowrap; font-family: monospace; }
+  #spsc-wrap .sp-pill { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 99px; }
+  #spsc-wrap .sp-pill-ready   { background: #E6F7EE; color: #007A3D; }
+  #spsc-wrap .sp-pill-partial { background: #FFFBEB; color: #92400E; }
+  #spsc-wrap .sp-pill-pending { background: #F1F1F1; color: #666; }
+
+  /* ── TABLE ── */
+  #spsc-wrap .sp-section-label {
+    font-size: 10px; font-weight: 700; color: #aaa;
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px;
+  }
+  #spsc-wrap .sp-table-wrap {
+    background: white; border: 1px solid #e2e6ee;
+    border-radius: 10px; overflow: auto; margin-bottom: 16px;
+  }
+  #spsc-wrap table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  #spsc-wrap thead tr { background: #0e1117; }
+  #spsc-wrap thead th {
+    padding: 10px 14px; text-align: left; font-weight: 600;
+    font-size: 11px; color: white; letter-spacing: 0.04em; white-space: nowrap;
+  }
+  #spsc-wrap thead th.num { text-align: right; }
+  #spsc-wrap tbody tr { border-bottom: 1px solid #f0f2f5; }
+  #spsc-wrap tbody tr:last-child { border-bottom: none; }
+  #spsc-wrap tbody tr:hover { background: #fafbfc; }
+  #spsc-wrap tbody td { padding: 9px 14px; color: #2c3240; }
+  #spsc-wrap tbody td:first-child { font-weight: 600; }
+  #spsc-wrap td.num { font-family: monospace; text-align: right; }
+  #spsc-wrap td.pos { color: #00A650; font-weight: 600; font-family: monospace; }
+  #spsc-wrap td.neg { color: #DC2626; font-weight: 600; font-family: monospace; }
+  #spsc-wrap .sp-badge {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 99px;
+  }
+  #spsc-wrap .badge-ready   { background: #E6F7EE; color: #007A3D; }
+  #spsc-wrap .badge-partial { background: #FFFBEB; color: #92400E; }
+  #spsc-wrap .badge-pending { background: #F1F1F1; color: #888; }
+
+  /* ── GLOBAL ROLLUP ── */
+  #spsc-wrap .sp-global {
+    background: white; border: 1px solid #e2e6ee;
+    border-radius: 10px; padding: 16px;
+  }
+  #spsc-wrap .sp-global-head {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px; padding-bottom: 12px;
+    border-bottom: 1px solid #f0f2f5;
+  }
+  #spsc-wrap .sp-global-icon {
+    width: 30px; height: 30px; background: #00A650;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  }
+  #spsc-wrap .sp-global-icon svg { width: 16px; height: 16px; fill: white; }
+  #spsc-wrap .sp-global-title { font-size: 13px; font-weight: 700; color: #0e1117; }
+  #spsc-wrap .sp-global-sub { font-size: 11px; color: #aaa; }
+  #spsc-wrap .sp-global-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px;
+  }
+  #spsc-wrap .sp-global-chip {
+    background: #f5f7fa; border: 1px solid #e2e6ee;
+    border-radius: 7px; padding: 10px 12px;
+  }
+  #spsc-wrap .sp-global-chip-label { font-size: 10px; color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  #spsc-wrap .sp-global-chip-val { font-size: 16px; font-weight: 700; color: #0e1117; font-family: monospace; letter-spacing: -0.01em; }
+  #spsc-wrap .sp-global-chip-val.sage { color: #00A650; }
+  #spsc-wrap .sp-global-chip-val.neg  { color: #DC2626; }
+
+  #spsc-wrap .sp-footer {
+    text-align: center; font-size: 10px; color: #ccc;
+    margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee;
+  }
+</style>
+
+<div id="spsc-wrap">
+
+  <div class="sp-header">
+    <div class="sp-header-left">
+      <div class="sp-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+      </div>
+      <div>
+        <div class="sp-title">Sage 50 Global Scorecard</div>
+        <div class="sp-subtitle">Board reporting · Strategic KPI dashboard · All values in GBP</div>
+      </div>
+    </div>
+    <div class="sp-controls">
+      <select id="spMonthSel" onchange="spRender()">
+        <option value="2025-10">October 2025</option>
+        <option value="2025-09">September 2025</option>
+      </select>
+      <span class="sp-updated" id="spUpdated"></span>
+    </div>
+  </div>
+
+  <div class="sp-summary" id="spSummary"></div>
+  <div class="sp-comp" id="spComp"></div>
+
+  <div class="sp-section-label">Regional breakdown</div>
+  <div class="sp-table-wrap">
+    <table>
+      <thead id="spThead"></thead>
+      <tbody id="spTbody"></tbody>
+    </table>
+  </div>
+
+  <div class="sp-section-label">Global rollup — all regions converted to GBP</div>
+  <div class="sp-global" id="spGlobal"></div>
+
+  <div class="sp-footer" id="spFooter"></div>
+
+</div>
+
+<script>
+(function() {
+
+  // ══════════════════════════════════════════════════════════════════
+  // DATA — UPDATE THESE NUMBERS EACH MONTH
+  // Each object = one region for one month
+  // CRM fields:  arr_open, arr_new, arr_exp, arr_price, arr_churn,
+  //              desk_users, desk_acc, desk_cust,
+  //              units_new_mtd, units_churn_mtd, units_new_ytd, units_churn_ytd
+  // Owner fields: playa_users, playa_cust, playa_mig, hosting_ytd, acv, rrbv
+  // Set any field to null if not yet submitted
+  // ══════════════════════════════════════════════════════════════════
+  var DATA = [
+    {
+      month:"2025-10", region:"United Kingdom", flag:"🇬🇧", currency:"GBP", fx:1.000,
+      arr_open:12.50, arr_new:0.30, arr_exp:0.10, arr_price:0.05, arr_churn:-0.20,
+      desk_users:28000, desk_acc:127000, desk_cust:63000,
+      units_new_mtd:45, units_churn_mtd:8, units_new_ytd:320, units_churn_ytd:55,
+      playa_users:214, playa_cust:214, playa_mig:12, hosting_ytd:45000, acv:1413, rrbv:850000
+    },
+    {
+      month:"2025-10", region:"USA", flag:"🇺🇸", currency:"USD", fx:0.790,
+      arr_open:8.20, arr_new:0.15, arr_exp:0.08, arr_price:0.02, arr_churn:-0.10,
+      desk_users:519, desk_acc:63000, desk_cust:63000,
+      units_new_mtd:22, units_churn_mtd:3, units_new_ytd:180, units_churn_ytd:28,
+      playa_users:506, playa_cust:506, playa_mig:8, hosting_ytd:32000, acv:980, rrbv:620000
+    },
+    {
+      month:"2025-10", region:"Canada", flag:"🇨🇦", currency:"CAD", fx:0.580,
+      arr_open:3.10, arr_new:0.08, arr_exp:0.03, arr_price:0.01, arr_churn:-0.05,
+      desk_users:264, desk_acc:81000, desk_cust:81000,
+      units_new_mtd:12, units_churn_mtd:2, units_new_ytd:95, units_churn_ytd:18,
+      playa_users:264, playa_cust:264, playa_mig:5, hosting_ytd:18000, acv:750, rrbv:410000
+    },
+    {
+      month:"2025-10", region:"France", flag:"🇫🇷", currency:"EUR", fx:1.170,
+      arr_open:1.80, arr_new:0.04, arr_exp:0.02, arr_price:0.01, arr_churn:-0.03,
+      desk_users:0, desk_acc:0, desk_cust:0,
+      units_new_mtd:5, units_churn_mtd:1, units_new_ytd:38, units_churn_ytd:7,
+      playa_users:null, playa_cust:null, playa_mig:null, hosting_ytd:null, acv:null, rrbv:null
+    },
+    {
+      month:"2025-10", region:"Iberia", flag:"🇪🇸", currency:"EUR", fx:1.170,
+      arr_open:0.90, arr_new:0.02, arr_exp:0.01, arr_price:0.00, arr_churn:-0.02,
+      desk_users:0, desk_acc:0, desk_cust:0,
+      units_new_mtd:3, units_churn_mtd:0, units_new_ytd:22, units_churn_ytd:4,
+      playa_users:null, playa_cust:null, playa_mig:null, hosting_ytd:null, acv:null, rrbv:null
+    },
+    {
+      month:"2025-10", region:"South Africa", flag:"🇿🇦", currency:"ZAR", fx:0.043,
+      arr_open:0.40, arr_new:0.01, arr_exp:0.00, arr_price:0.00, arr_churn:-0.01,
+      desk_users:0, desk_acc:0, desk_cust:0,
+      units_new_mtd:2, units_churn_mtd:0, units_new_ytd:14, units_churn_ytd:2,
+      playa_users:null, playa_cust:null, playa_mig:null, hosting_ytd:null, acv:null, rrbv:null
+    },
+    {
+      month:"2025-10", region:"Germany", flag:"🇩🇪", currency:"EUR", fx:1.170,
+      arr_open:2.20, arr_new:0.06, arr_exp:0.03, arr_price:0.01, arr_churn:-0.04,
+      desk_users:0, desk_acc:0, desk_cust:0,
+      units_new_mtd:8, units_churn_mtd:1, units_new_ytd:58, units_churn_ytd:10,
+      playa_users:89, playa_cust:89, playa_mig:3, hosting_ytd:12000, acv:620, rrbv:290000
+    },
+    // ── SEPTEMBER DATA ─────────────────────────────────────────────
+    {
+      month:"2025-09", region:"United Kingdom", flag:"🇬🇧", currency:"GBP", fx:1.000,
+      arr_open:12.20, arr_new:0.28, arr_exp:0.09, arr_price:0.04, arr_churn:-0.18,
+      desk_users:27500, desk_acc:125000, desk_cust:62000,
+      units_new_mtd:42, units_churn_mtd:7, units_new_ytd:275, units_churn_ytd:47,
+      playa_users:198, playa_cust:198, playa_mig:9, hosting_ytd:38000, acv:1413, rrbv:820000
+    },
+    {
+      month:"2025-09", region:"USA", flag:"🇺🇸", currency:"USD", fx:0.790,
+      arr_open:8.05, arr_new:0.14, arr_exp:0.07, arr_price:0.02, arr_churn:-0.09,
+      desk_users:510, desk_acc:62000, desk_cust:62000,
+      units_new_mtd:20, units_churn_mtd:3, units_new_ytd:158, units_churn_ytd:25,
+      playa_users:490, playa_cust:490, playa_mig:6, hosting_ytd:28000, acv:980, rrbv:600000
+    },
+    {
+      month:"2025-09", region:"Canada", flag:"🇨🇦", currency:"CAD", fx:0.580,
+      arr_open:3.02, arr_new:0.07, arr_exp:0.02, arr_price:0.01, arr_churn:-0.04,
+      desk_users:258, desk_acc:80000, desk_cust:80000,
+      units_new_mtd:10, units_churn_mtd:2, units_new_ytd:83, units_churn_ytd:16,
+      playa_users:null, playa_cust:null, playa_mig:null, hosting_ytd:null, acv:null, rrbv:null
+    },
+    {
+      month:"2025-09", region:"France", flag:"🇫🇷", currency:"EUR", fx:1.170,
+      arr_open:1.76, arr_new:0.03, arr_exp:0.01, arr_price:0.01, arr_churn:-0.02,
+      desk_users:0, desk_acc:0, desk_cust:0,
+      units_new_mtd:4, units_churn_mtd:1, units_new_ytd:33, units_churn_ytd:6,
+      playa_users:null, playa_cust:null, playa_mig:null, hosting_ytd:null, acv:null, rrbv:null
+    },
+    {
+      month:"2025-09", region:"Iberia", flag:"🇪🇸", currency:"EUR", fx:1.170,
+      arr_open:0.88, arr_new:0.01, arr_exp:0.00, arr_price:0.00, arr_churn:-0.01,
+      desk_users:0, desk_acc:0, desk_cust:0,
+      units_new_mtd:2, units_churn_mtd:0, units_new_ytd:19, units_churn_ytd:4,
+      playa_users:null, playa_cust:null, playa_mig:null, hosting_ytd:null, acv:null, rrbv:null
+    },
+    {
+      month:"2025-09", region:"South Africa", flag:"🇿🇦", currency:"ZAR", fx:0.043,
+      arr_open:0.39, arr_new:0.01, arr_exp:0.00, arr_price:0.00, arr_churn:-0.01,
+      desk_users:0, desk_acc:0, desk_cust:0,
+      units_new_mtd:1, units_churn_mtd:0, units_new_ytd:12, units_churn_ytd:2,
+      playa_users:null, playa_cust:null, playa_mig:null, hosting_ytd:null, acv:null, rrbv:null
+    },
+    {
+      month:"2025-09", region:"Germany", flag:"🇩🇪", currency:"EUR", fx:1.170,
+      arr_open:2.14, arr_new:0.05, arr_exp:0.02, arr_price:0.01, arr_churn:-0.03,
+      desk_users:0, desk_acc:0, desk_cust:0,
+      units_new_mtd:6, units_churn_mtd:1, units_new_ytd:50, units_churn_ytd:9,
+      playa_users:null, playa_cust:null, playa_mig:null, hosting_ytd:null, acv:null, rrbv:null
+    }
+  ];
+
+  var MONTH_LABELS = { "2025-10": "October 2025", "2025-09": "September 2025" };
+
+  // ── Formatters ────────────────────────────────────────────────────
+  function fmtM(n) {
+    if (n === null || n === undefined) return "—";
+    return (n < 0 ? "-£" : "£") + Math.abs(n).toFixed(2) + "m";
+  }
+  function fmtK(n) {
+    if (n === null || n === undefined) return "—";
+    if (n >= 1000000) return (n/1000000).toFixed(1) + "M";
+    if (n >= 1000) return (n/1000).toFixed(1) + "k";
+    return n.toLocaleString("en-GB");
+  }
+  function fmtGBP(n) {
+    if (n === null || n === undefined) return "—";
+    return "£" + Math.round(n).toLocaleString("en-GB");
+  }
+  function fmtLocalCurr(n, curr) {
+    if (n === null || n === undefined) return "—";
+    return curr + " " + Math.round(n).toLocaleString("en-GB");
+  }
+  function hasOwner(d) {
+    return d.playa_users !== null && d.playa_users !== undefined;
+  }
+  function status(d) {
+    var hasCRM = d.arr_open !== null;
+    var hasOwn = hasOwner(d);
+    if (hasCRM && hasOwn) return "ready";
+    if (hasCRM) return "partial";
+    return "pending";
+  }
+
+  // ── Main render ───────────────────────────────────────────────────
+  function spRender() {
+    var month = document.getElementById("spMonthSel").value;
+    var rows = DATA.filter(function(d) { return d.month === month; });
+
+    var label = MONTH_LABELS[month] || month;
+    document.getElementById("spUpdated").textContent = label;
+    document.getElementById("spFooter").textContent =
+      "Sage 50 Global Scorecard · " + label + " · Confidential — Board use only";
+
+    // Totals
+    function tot(fn) { return rows.reduce(function(s,r){ var v=fn(r); return s+(v||0); }, 0); }
+    var tOpen  = tot(function(r){ return r.arr_open  * r.fx; });
+    var tNew   = tot(function(r){ return r.arr_new   * r.fx; });
+    var tChurn = tot(function(r){ return r.arr_churn * r.fx; });
+    var tNMTD  = tot(function(r){ return r.units_new_mtd; });
+    var tCMTD  = tot(function(r){ return r.units_churn_mtd; });
+    var tPlaya = tot(function(r){ return r.playa_users || 0; });
+
+    // Summary strip
+    document.getElementById("spSummary").innerHTML = [
+      {label:"Opening ARR", val: "£"+tOpen.toFixed(2)+"m", sub:"All regions · GBP", hl:true, green:true},
+      {label:"New ARR MTD",  val: "£"+tNew.toFixed(2)+"m",  sub:"Month to date · GBP"},
+      {label:"Churn ARR MTD",val: "£"+Math.abs(tChurn).toFixed(2)+"m", sub:"Month to date · GBP"},
+      {label:"New units MTD",val: tNMTD,  sub:"All regions"},
+      {label:"Churn units MTD",val: tCMTD, sub:"All regions"},
+      {label:"Playa users",  val: tPlaya > 0 ? fmtK(tPlaya) : "—", sub:"Where submitted"}
+    ].map(function(c) {
+      return '<div class="sp-sum-card' + (c.hl?" hl":"") + '">' +
+        '<div class="sp-sum-label">'+c.label+'</div>' +
+        '<div class="sp-sum-val'+(c.green?" green":"")+'">'+c.val+'</div>' +
+        '<div class="sp-sum-sub">'+c.sub+'</div>' +
+        '</div>';
+    }).join("");
+
+    // Completion bar
+    var ready   = rows.filter(function(r){ return status(r)==="ready"; }).length;
+    var partial = rows.filter(function(r){ return status(r)==="partial"; }).length;
+    var pending = rows.filter(function(r){ return status(r)==="pending"; }).length;
+    var pct     = rows.length ? Math.round((ready/rows.length)*100) : 0;
+
+    document.getElementById("spComp").innerHTML =
+      '<span class="sp-comp-label">Data completeness</span>' +
+      '<div class="sp-comp-track"><div class="sp-comp-fill" style="width:'+pct+'%"></div></div>' +
+      '<span class="sp-comp-pct">'+pct+'%</span>' +
+      (ready   ? '<span class="sp-pill sp-pill-ready">'+ready+' complete</span>'   : '') +
+      (partial ? '<span class="sp-pill sp-pill-partial">'+partial+' CRM only</span>' : '') +
+      (pending ? '<span class="sp-pill sp-pill-pending">'+pending+' pending</span>' : '');
+
+    // Regional table
+    document.getElementById("spThead").innerHTML =
+      '<tr>' +
+      '<th>Region</th>' +
+      '<th>Currency</th>' +
+      '<th class="num">Opening ARR</th>' +
+      '<th class="num">New ARR</th>' +
+      '<th class="num">Churn ARR</th>' +
+      '<th class="num">Desktop Users</th>' +
+      '<th class="num">Desktop Accounts</th>' +
+      '<th class="num">Desktop Customers</th>' +
+      '<th class="num">New Units MTD</th>' +
+      '<th class="num">Churn Units MTD</th>' +
+      '<th class="num">Playa Users</th>' +
+      '<th class="num">Playa Customers</th>' +
+      '<th class="num">Migrations MTD</th>' +
+      '<th class="num">Hosting YTD</th>' +
+      '<th class="num">ACV</th>' +
+      '<th class="num">RRbV R12</th>' +
+      '<th>Status</th>' +
+      '</tr>';
+
+    var statusBadge = function(s) {
+      var map = {ready:"badge-ready", partial:"badge-partial", pending:"badge-pending"};
+      var lbl = {ready:"Complete", partial:"CRM only", pending:"Pending"};
+      return '<span class="sp-badge '+map[s]+'">'+lbl[s]+'</span>';
+    };
+
+    document.getElementById("spTbody").innerHTML = rows.map(function(d) {
+      var s = status(d);
+      return '<tr>' +
+        '<td>'+d.flag+' '+d.region+'</td>' +
+        '<td>'+d.currency+'</td>' +
+        '<td class="num pos">'+fmtM(d.arr_open)+'</td>' +
+        '<td class="num pos">'+fmtM(d.arr_new)+'</td>' +
+        '<td class="num neg">'+fmtM(d.arr_churn)+'</td>' +
+        '<td class="num">'+fmtK(d.desk_users)+'</td>' +
+        '<td class="num">'+fmtK(d.desk_acc)+'</td>' +
+        '<td class="num">'+fmtK(d.desk_cust)+'</td>' +
+        '<td class="num">'+d.units_new_mtd+'</td>' +
+        '<td class="num">'+d.units_churn_mtd+'</td>' +
+        '<td class="num">'+(d.playa_users!==null?d.playa_users:"—")+'</td>' +
+        '<td class="num">'+(d.playa_cust!==null?d.playa_cust:"—")+'</td>' +
+        '<td class="num">'+(d.playa_mig!==null?d.playa_mig:"—")+'</td>' +
+        '<td class="num">'+(d.hosting_ytd!==null?fmtLocalCurr(d.hosting_ytd,d.currency):"—")+'</td>' +
+        '<td class="num">'+(d.acv!==null?fmtLocalCurr(d.acv,d.currency):"—")+'</td>' +
+        '<td class="num">'+(d.rrbv!==null?fmtLocalCurr(d.rrbv,d.currency):"—")+'</td>' +
+        '<td>'+statusBadge(s)+'</td>' +
+        '</tr>';
+    }).join("");
+
+    // Global rollup
+    var tExp   = tot(function(r){ return r.arr_exp   * r.fx; });
+    var tPrice = tot(function(r){ return r.arr_price * r.fx; });
+    var tDeskU = tot(function(r){ return r.desk_users; });
+    var tDeskA = tot(function(r){ return r.desk_acc; });
+    var tDeskC = tot(function(r){ return r.desk_cust; });
+    var tNYTD  = tot(function(r){ return r.units_new_ytd; });
+    var tCYTD  = tot(function(r){ return r.units_churn_ytd; });
+    var tPlayaC= tot(function(r){ return r.playa_cust||0; });
+    var tMig   = tot(function(r){ return r.playa_mig||0; });
+    var tHost  = tot(function(r){ return r.hosting_ytd ? r.hosting_ytd*r.fx : 0; });
+
+    var chips = [
+      {label:"Opening ARR",    val: "£"+tOpen.toFixed(2)+"m",  sage:true},
+      {label:"New ARR",        val: "£"+tNew.toFixed(2)+"m"},
+      {label:"Expansion ARR",  val: "£"+tExp.toFixed(2)+"m"},
+      {label:"Pricing ARR",    val: "£"+tPrice.toFixed(2)+"m"},
+      {label:"Churn ARR",      val: "£"+Math.abs(tChurn).toFixed(2)+"m", neg:true},
+      {label:"Desktop users",  val: fmtK(tDeskU)},
+      {label:"Desktop accounts",val:fmtK(tDeskA)},
+      {label:"Desktop customers",val:fmtK(tDeskC)},
+      {label:"New units YTD",  val: tNYTD},
+      {label:"Churn units YTD",val: tCYTD},
+      {label:"Playa users",    val: fmtK(tPlaya)},
+      {label:"Playa customers",val: fmtK(tPlayaC)},
+      {label:"Migrations MTD", val: tMig},
+      {label:"Hosting YTD",    val: fmtGBP(tHost)}
+    ];
+
+    document.getElementById("spGlobal").innerHTML =
+      '<div class="sp-global-head">' +
+        '<div class="sp-global-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>' +
+        '<div><div class="sp-global-title">Global — all regions</div>' +
+        '<div class="sp-global-sub">All monetary values converted to GBP · '+ready+'/'+rows.length+' regions complete</div></div>' +
+      '</div>' +
+      '<div class="sp-global-grid">' +
+        chips.map(function(c) {
+          return '<div class="sp-global-chip">' +
+            '<div class="sp-global-chip-label">'+c.label+'</div>' +
+            '<div class="sp-global-chip-val'+(c.sage?" sage":"")+(c.neg?" neg":"")+'">'+c.val+'</div>' +
+            '</div>';
+        }).join("") +
+      '</div>';
+  }
+
+  // Expose to onchange handler
+  window.spRender = spRender;
+  spRender();
+
+})();
+</script>
